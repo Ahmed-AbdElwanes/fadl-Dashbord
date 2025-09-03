@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة التحكم الإدارية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Cairo", sans-serif;
+      }
+      .hidden {
+        display: none;
+      }
+      .success-message {
+        color: green;
+      }
+      .error-message {
+        color: red;
+      }
+      .project-item {
+        transition: all 0.3s ease;
+      }
+      .project-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .image-container {
+        position: relative;
+        display: inline-block;
+        margin: 5px;
+      }
+      .delete-image-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4"
+  >
+    <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
+      <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
+        لوحة التحكم الإدارية
+      </h1>
+
+      <!-- قسم تسجيل الدخول -->
+      <div id="loginSection" class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">تسجيل الدخول</h2>
+        <div class="space-y-4">
+          <input
+            id="loginName"
+            type="text"
+            placeholder="اسم المسؤول"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="كلمة المرور"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            id="loginButton"
+            class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+          >
+            تسجيل الدخول
+          </button>
+        </div>
+        <p id="loginMessage" class="mt-2 text-sm hidden"></p>
+      </div>
+
+      <!-- قسم الإدارة (مخفي حتى تسجيل الدخول) -->
+      <div id="adminSection" class="hidden mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">إدارة المسؤول</h2>
+        <div class="space-y-4">
+          <input
+            id="adminName"
+            type="text"
+            placeholder="اسم المسؤول الجديد"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            id="adminPassword"
+            type="password"
+            placeholder="كلمة المرور الجديدة"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            id="updateAdminButton"
+            class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+          >
+            تحديث المسؤول
+          </button>
+        </div>
+        <p id="adminMessage" class="mt-2 text-sm hidden"></p>
+        <button
+          id="logoutButton"
+          class="mt-4 w-full bg-red-600 text-white p-2 rounded-md hover:bg-red-700"
+        >
+          تسجيل الخروج
+        </button>
+      </div>
+
+      <!-- قسم المشاريع (مخفي حتى تسجيل الدخول) -->
+      <div id="projectsSection" class="hidden">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+          إدارة المشاريع
+        </h2>
+        <!-- إنشاء مشروع -->
+        <div class="mb-6">
+          <h3 class="text-xl font-medium text-gray-600 mb-2">
+            إنشاء مشروع جديد
+          </h3>
+          <form id="createProjectForm" class="space-y-4">
+            <input
+              id="projectTitle"
+              type="text"
+              placeholder="عنوان المشروع"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              id="projectName"
+              type="text"
+              placeholder="اسم المشروع"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              id="projectDescription"
+              placeholder="وصف المشروع"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+            <input
+              id="projectPrograms"
+              type="text"
+              placeholder="البرامج المستخدمة (مفصولة بفواصل)"
+              class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              id="projectImages"
+              type="file"
+              multiple
+              accept="image/*"
+              class="w-full p-2 border rounded-md"
+            />
+            <button
+              type="submit"
+              class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            >
+              إنشاء المشروع
+            </button>
+          </form>
+          <p id="createProjectMessage" class="mt-2 text-sm hidden"></p>
+        </div>
+        <!-- قائمة المشاريع -->
+        <div>
+          <h3 class="text-xl font-medium text-gray-600 mb-2">قائمة المشاريع</h3>
+          <div id="projectList" class="space-y-4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // API base URL
+      const API_URL = "https://fadl-back.vercel.app/api";
+
+      // عناصر DOM
+      const loginButton = document.getElementById("loginButton");
+      const updateAdminButton = document.getElementById("updateAdminButton");
+      const logoutButton = document.getElementById("logoutButton");
+      const createProjectForm = document.getElementById("createProjectForm");
+
+      // تهيئة الصفحة
+      document.addEventListener("DOMContentLoaded", function () {
+        // إضافة معالجات الأحداث
+        loginButton.addEventListener("click", login);
+        updateAdminButton.addEventListener("click", updateAdmin);
+        logoutButton.addEventListener("click", logout);
+        createProjectForm.addEventListener("submit", createProject);
+
+        // التحقق من وجود token
+        const token = localStorage.getItem("token");
+        if (token) {
+          verifyToken(token)
+            .then(() => {
+              showAdminAndProjects();
+              fetchProjects();
+            })
+            .catch(() => {
+              localStorage.removeItem("token");
+              showLogin();
+            });
+        } else {
+          showLogin();
+        }
+      });
+
+      // عرض قسم تسجيل الدخول وإخفاء الآخرين
+      function showLogin() {
+        document.getElementById("loginSection").classList.remove("hidden");
+        document.getElementById("adminSection").classList.add("hidden");
+        document.getElementById("projectsSection").classList.add("hidden");
+      }
+
+      // عرض أقسام الإدارة والمشاريع وإخفاء تسجيل الدخول
+      function showAdminAndProjects() {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("adminSection").classList.remove("hidden");
+        document.getElementById("projectsSection").classList.remove("hidden");
+      }
+
+      // عرض رسالة
+      function showMessage(elementId, message, isError = true) {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.classList.remove("hidden", "text-red-600", "text-green-600");
+
+        if (isError) {
+          element.classList.add("text-red-600");
+        } else {
+          element.classList.add("text-green-600");
+        }
+
+        // إخفاء الرسالة بعد 5 ثوان
+        setTimeout(() => {
+          element.classList.add("hidden");
+        }, 5000);
+      }
+
+      // التحقق من صحة token
+      async function verifyToken(token) {
+        try {
+          const response = await fetch(`${API_URL}/projects`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!response.ok) {
+            throw new Error("Invalid token");
+          }
+        } catch (error) {
+          throw new Error("Token verification failed");
+        }
+      }
+
+      // تسجيل الدخول
+      async function login() {
+        const name = document.getElementById("loginName").value;
+        const password = document.getElementById("loginPassword").value;
+
+        if (!name || !password) {
+          showMessage("loginMessage", "يرجى إدخال اسم المستخدم وكلمة المرور");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            localStorage.setItem("token", data.token);
+            showMessage("loginMessage", "تم تسجيل الدخول بنجاح!", false);
+            showAdminAndProjects();
+            fetchProjects();
+          } else {
+            showMessage("loginMessage", data.message || "فشل تسجيل الدخول");
+          }
+        } catch (error) {
+          showMessage("loginMessage", "خطأ في الاتصال: " + error.message);
+        }
+      }
+
+      // تسجيل الخروج
+      function logout() {
+        localStorage.removeItem("token");
+        showLogin();
+        showMessage("loginMessage", "تم تسجيل الخروج بنجاح", false);
+      }
+
+      // تحديث بيانات المسؤول
+      async function updateAdmin() {
+        const name = document.getElementById("adminName").value;
+        const password = document.getElementById("adminPassword").value;
+        const token = localStorage.getItem("token");
+
+        if (!name || !password) {
+          showMessage("adminMessage", "يرجى إدخال اسم وكلمة مرور جديدين");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/admin`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showMessage(
+              "adminMessage",
+              "تم تحديث بيانات المسؤول بنجاح!",
+              false
+            );
+            document.getElementById("adminName").value = "";
+            document.getElementById("adminPassword").value = "";
+          } else {
+            showMessage(
+              "adminMessage",
+              data.message || "فشل تحديث بيانات المسؤول"
+            );
+          }
+        } catch (error) {
+          showMessage("adminMessage", "خطأ في الاتصال: " + error.message);
+        }
+      }
+
+      // إنشاء مشروع جديد
+      async function createProject(event) {
+        event.preventDefault();
+
+        const title = document.getElementById("projectTitle").value.trim();
+        const name = document.getElementById("projectName").value.trim();
+        const description = document
+          .getElementById("projectDescription")
+          .value.trim();
+        const programsValue = document
+          .getElementById("projectPrograms")
+          .value.trim();
+        const images = document.getElementById("projectImages").files;
+        const token = localStorage.getItem("token");
+
+        // التحقق من صحة البيانات
+        if (!title || !name || !description) {
+          showMessage("createProjectMessage", "يرجى ملء جميع الحقول المطلوبة");
+          return;
+        }
+
+        if (!programsValue) {
+          showMessage(
+            "createProjectMessage",
+            "يرجى إدخال برنامج واحد على الأقل"
+          );
+          return;
+        }
+
+        if (!images.length) {
+          showMessage(
+            "createProjectMessage",
+            "يرجى اختيار صورة واحدة على الأقل"
+          );
+          return;
+        }
+
+        if (!token) {
+          showMessage(
+            "createProjectMessage",
+            "لم يتم العثور على token، يرجى تسجيل الدخول مرة أخرى"
+          );
+          return;
+        }
+
+        // معالجة قائمة البرامج
+        let usedPrograms = programsValue
+          .split(",")
+          .map((p) => p.trim())
+          .filter((p) => p);
+
+        if (!usedPrograms.length) {
+          showMessage(
+            "createProjectMessage",
+            "يرجى إدخال برامج صحيحة (مفصولة بفواصل)"
+          );
+          return;
+        }
+
+        // إنشاء FormData لإرسال البيانات
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("usedPrograms", JSON.stringify(usedPrograms));
+
+        for (let i = 0; i < images.length; i++) {
+          formData.append("images", images[i]);
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/projects`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+
+          let data;
+          try {
+            data = await response.json();
+          } catch (error) {
+            data = { message: "استجابة غير صالحة من الخادم" };
+          }
+
+          if (response.ok) {
+            showMessage(
+              "createProjectMessage",
+              "تم إنشاء المشروع بنجاح!",
+              false
+            );
+            fetchProjects();
+
+            // مسح حقول الإدخال
+            document.getElementById("projectTitle").value = "";
+            document.getElementById("projectName").value = "";
+            document.getElementById("projectDescription").value = "";
+            document.getElementById("projectPrograms").value = "";
+            document.getElementById("projectImages").value = "";
+          } else {
+            showMessage(
+              "createProjectMessage",
+              data.message || "فشل إنشاء المشروع"
+            );
+          }
+        } catch (error) {
+          showMessage(
+            "createProjectMessage",
+            "خطأ في الاتصال: " + error.message
+          );
+        }
+      }
+
+      // جلب وعرض المشاريع
+      async function fetchProjects() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          showLogin();
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/projects`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (!response.ok) {
+            throw new Error("فشل في جلب المشاريع");
+          }
+
+          const projects = await response.json();
+          const projectList = document.getElementById("projectList");
+          projectList.innerHTML = "";
+
+          if (!Array.isArray(projects)) {
+            throw new Error("تنسيق البيانات غير صحيح");
+          }
+
+          projects.forEach((project) => {
+            // التأكد من وجود الخصائص المطلوبة
+            const safeUsedPrograms = Array.isArray(project.usedPrograms)
+              ? project.usedPrograms
+              : typeof project.usedPrograms === "string"
+              ? project.usedPrograms.split(",")
+              : [];
+
+            const safeImages = Array.isArray(project.imageUrls)
+              ? project.imageUrls
+              : [];
+
+            const projectDiv = document.createElement("div");
+            projectDiv.className =
+              "border p-4 rounded-md bg-gray-50 project-item";
+            projectDiv.id = `project-${project._id}`;
+
+            projectDiv.innerHTML = `
+                        <div class="mb-4">
+                            <h4 class="text-lg font-semibold mb-2">${
+                              project.title || "لا يوجد عنوان"
+                            }</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">الاسم:</label>
+                                    <input type="text" value="${
+                                      project.name || ""
+                                    }" 
+                                        class="edit-name w-full p-2 border rounded-md" 
+                                        data-id="${project._id}">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">العنوان:</label>
+                                    <input type="text" value="${
+                                      project.title || ""
+                                    }" 
+                                        class="edit-title w-full p-2 border rounded-md" 
+                                        data-id="${project._id}">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700">الوصف:</label>
+                                    <textarea 
+                                        class="edit-description w-full p-2 border rounded-md" 
+                                        data-id="${project._id}"
+                                        rows="3">${
+                                          project.description || ""
+                                        }</textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700">البرامج المستخدمة (مفصولة بفواصل):</label>
+                                    <input type="text" value="${
+                                      safeUsedPrograms.join(", ") || ""
+                                    }" 
+                                        class="edit-programs w-full p-2 border rounded-md" 
+                                        data-id="${project._id}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-sm font-medium text-gray-700">الصور الحالية:</p>
+                            <div class="mt-2" id="current-images-${
+                              project._id
+                            }">
+                                ${
+                                  safeImages.length > 0
+                                    ? safeImages
+                                        .map(
+                                          (img, index) => `
+                                        <div class="image-container">
+                                            <img src="http://localhost:3000${img}" alt="صورة المشروع" class="w-24 h-24 object-cover">
+                                            <button type="button" class="delete-image-btn" data-id="${project._id}" data-index="${index}">×</button>
+                                        </div>
+                                    `
+                                        )
+                                        .join("")
+                                    : '<p class="text-gray-500">لا توجد صور</p>'
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700">صور جديدة (اختياري):</label>
+                            <input type="file" multiple accept="image/*" class="new-images mt-2" data-id="${
+                              project._id
+                            }">
+                            <p class="text-xs text-gray-500 mt-1">يمكنك تحميل بين 3 و15 صورة جديدة (سيتم استبدال جميع الصور الحالية)</p>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button 
+                                type="button" 
+                                class="update-project-btn bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                data-id="${project._id}"
+                            >
+                                حفظ التعديلات
+                            </button>
+                            <button 
+                                type="button" 
+                                class="delete-btn bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                                data-id="${project._id}"
+                            >
+                                حذف المشروع
+                            </button>
+                        </div>
+                    `;
+
+            projectList.appendChild(projectDiv);
+          });
+
+          // إضافة معالجات الأحداث للأزرار الديناميكية
+          document.querySelectorAll(".update-project-btn").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const projectId = this.getAttribute("data-id");
+              updateProject(projectId);
+            });
+          });
+
+          document.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const projectId = this.getAttribute("data-id");
+              deleteProject(projectId);
+            });
+          });
+
+          document.querySelectorAll(".delete-image-btn").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const projectId = this.getAttribute("data-id");
+              const imageIndex = this.getAttribute("data-index");
+              deleteProjectImage(projectId, imageIndex);
+            });
+          });
+        } catch (error) {
+          showMessage("createProjectMessage", "خطأ: " + error.message);
+        }
+      }
+
+      // حذف صورة من المشروع
+      async function deleteProjectImage(projectId, imageIndex) {
+        // في هذا الإصدار، لا يدعم السيرفر حذف الصور الفردية
+        // لذلك سنقوم فقط بإزالة الصورة من الواجهة مؤقتًا
+        // وسيتم تطبيق التغييرات فعليًا عند حفظ التعديلات
+        const imageContainer = document.querySelector(
+          `.delete-image-btn[data-id="${projectId}"][data-index="${imageIndex}"]`
+        ).parentElement;
+        imageContainer.remove();
+
+        showMessage(
+          "createProjectMessage",
+          "تم حذف الصورة من العرض. احفظ التعديلات لتطبيق التغييرات.",
+          false
+        );
+      }
+
+      // تحديث المشروع
+      async function updateProject(projectId) {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          showMessage(
+            "createProjectMessage",
+            "لم يتم العثور على token، يرجى تسجيل الدخول مرة أخرى"
+          );
+          return;
+        }
+
+        // جمع البيانات من حقول الإدخال
+        const title = document.querySelector(
+          `.edit-title[data-id="${projectId}"]`
+        ).value;
+        const name = document.querySelector(
+          `.edit-name[data-id="${projectId}"]`
+        ).value;
+        const description = document.querySelector(
+          `.edit-description[data-id="${projectId}"]`
+        ).value;
+        const programsValue = document.querySelector(
+          `.edit-programs[data-id="${projectId}"]`
+        ).value;
+        const newImages = document.querySelector(
+          `.new-images[data-id="${projectId}"]`
+        ).files;
+
+        // معالجة قائمة البرامج
+        const usedPrograms = programsValue
+          .split(",")
+          .map((p) => p.trim())
+          .filter((p) => p);
+
+        // إنشاء FormData لإرسال البيانات
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("usedPrograms", JSON.stringify(usedPrograms));
+
+        // إضافة الصور الجديدة إذا وجدت
+        for (let i = 0; i < newImages.length; i++) {
+          formData.append("images", newImages[i]);
+          console.log("in loop " + newImages[i]);
+        }
+        console.log("after loop " + formData.getAll("images"));
+        try {
+          const response = await fetch(`${API_URL}/projects/${projectId}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            body: formData
+          });
+          console.log("after fetch " + formData);
+          console.log(newImages);
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showMessage(
+              "createProjectMessage",
+              "تم تحديث المشروع بنجاح!",
+              false
+            );
+
+            // إظهار تأثير بصري للتأكيد على التحديث
+            const projectElement = document.getElementById(
+              `project-${projectId}`
+            );
+            projectElement.classList.add("bg-green-50");
+            setTimeout(() => {
+              projectElement.classList.remove("bg-green-50");
+            }, 1000);
+
+            // إعادة تحميل المشاريع لرؤية التغييرات
+            setTimeout(() => {
+              fetchProjects();
+            }, 1500);
+          } else {
+            showMessage(
+              "createProjectMessage",
+              data.message || "فشل تحديث المشروع"
+            );
+          }
+        } catch (error) {
+          showMessage(
+            "createProjectMessage",
+            "خطأ في الاتصال: " + error.message
+          );
+        }
+      }
+
+      // حذف المشروع
+      async function deleteProject(projectId) {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          showMessage(
+            "createProjectMessage",
+            "لم يتم العثور على token، يرجى تسجيل الدخول مرة أخرى"
+          );
+          return;
+        }
+
+        if (!confirm("هل أنت متأكد من أنك تريد حذف هذا المشروع؟")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/projects/${projectId}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (response.ok) {
+            showMessage("createProjectMessage", "تم حذف المشروع بنجاح!", false);
+
+            // إزالة العنصر من الواجهة
+            const projectElement = document.getElementById(
+              `project-${projectId}`
+            );
+            if (projectElement) {
+              projectElement.style.opacity = "0";
+              setTimeout(() => {
+                projectElement.remove();
+              }, 300);
+            }
+          } else {
+            const data = await response.json();
+            showMessage(
+              "createProjectMessage",
+              data.message || "فشل حذف المشروع"
+            );
+          }
+        } catch (error) {
+          showMessage(
+            "createProjectMessage",
+            "خطأ في الاتصال: " + error.message
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
