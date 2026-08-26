@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>لوحة التحكم الإدارية</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="./dashboard.css" />
+  </head>
+
+  <body class="bg-gray-100 min-h-screen p-4">
+    <main class="dashboard-container">
+      <!-- =====================================================
+           Header
+           ===================================================== -->
+
+      <header class="dashboard-header">
+        <h1>لوحة التحكم الإدارية</h1>
+
+        <div id="sessionStatus" class="session-status hidden">
+          جاري التحقق من الجلسة...
+        </div>
+      </header>
+
+      <!-- =====================================================
+           Login
+           ===================================================== -->
+
+      <section id="loginSection" class="dashboard-section">
+        <h2>تسجيل الدخول</h2>
+
+        <div class="form-group">
+          <input
+            id="loginName"
+            type="text"
+            placeholder="اسم المسؤول"
+            autocomplete="username"
+          />
+
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="كلمة المرور"
+            autocomplete="current-password"
+          />
+
+          <button id="loginButton" type="button" class="primary-button">
+            تسجيل الدخول
+          </button>
+        </div>
+
+        <p id="loginMessage" class="message"></p>
+      </section>
+
+      <!-- =====================================================
+           Admin Management
+           ===================================================== -->
+
+      <section id="adminSection" class="dashboard-section hidden">
+        <div class="section-header">
+          <h2>إدارة المسؤول</h2>
+
+          <button
+            id="logoutButton"
+            type="button"
+            class="danger-button small-button"
+          >
+            تسجيل الخروج
+          </button>
+        </div>
+
+        <div class="form-group">
+          <input
+            id="adminName"
+            type="text"
+            placeholder="اسم المسؤول الجديد"
+            autocomplete="off"
+          />
+
+          <input
+            id="adminPassword"
+            type="password"
+            placeholder="كلمة المرور الجديدة"
+            autocomplete="new-password"
+          />
+
+          <button id="updateAdminButton" type="button" class="primary-button">
+            تحديث المسؤول
+          </button>
+        </div>
+
+        <p id="adminMessage" class="message"></p>
+      </section>
+
+      <!-- =====================================================
+           Projects
+           ===================================================== -->
+
+      <section id="projectsSection" class="dashboard-section hidden">
+        <h2>إدارة المشاريع</h2>
+
+        <!-- ===================================================
+             Create Project
+             =================================================== -->
+
+        <div class="create-project-card">
+          <h3>إنشاء مشروع جديد</h3>
+
+          <form id="createProjectForm">
+            <!-- Category -->
+
+            <div class="form-field">
+              <label for="projectTitle"> التصنيف </label>
+
+              <select id="projectTitle" required></select>
+            </div>
+
+            <!-- Project Name -->
+
+            <div class="form-field">
+              <label for="projectName"> اسم المشروع </label>
+
+              <input
+                id="projectName"
+                type="text"
+                placeholder="مثال: Summer Campaign"
+                required
+              />
+            </div>
+
+            <!-- Description -->
+
+            <div class="form-field">
+              <label for="projectDescription"> وصف المشروع </label>
+
+              <textarea
+                id="projectDescription"
+                rows="5"
+                placeholder="اكتب وصف المشروع..."
+                required
+              ></textarea>
+            </div>
+
+            <!-- =================================================
+                 Tools
+                 ================================================= -->
+
+            <div class="form-field">
+              <label> البرامج المستخدمة </label>
+
+              <div id="projectTools" class="tools-grid"></div>
+            </div>
+
+            <!-- =================================================
+                 Image Upload
+                 ================================================= -->
+
+            <div class="form-field">
+              <div class="upload-header">
+                <label> صور المشروع </label>
+
+                <span id="imageCount"> 0 / 20 </span>
+              </div>
+
+              <div id="dropZone" class="drop-zone">
+                <input
+                  id="projectImages"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  hidden
+                />
+
+                <div class="drop-zone-content">
+                  <div class="upload-icon">↑</div>
+
+                  <p>اسحب الصور هنا</p>
+
+                  <span> أو </span>
+
+                  <label for="projectImages" class="browse-button">
+                    اختر الصور
+                  </label>
+
+                  <small> الحد الأقصى 20 صورة </small>
+                </div>
+              </div>
+
+              <!-- Preview -->
+
+              <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <!-- Submit -->
+
+            <button
+              id="createProjectButton"
+              type="submit"
+              class="primary-button"
+            >
+              إنشاء المشروع
+            </button>
+
+            <!-- Loader -->
+
+            <div id="createLoader" class="loader-container hidden">
+              <div class="loader"></div>
+
+              <span> جاري رفع المشروع والصور... </span>
+            </div>
+          </form>
+
+          <p id="createProjectMessage" class="message"></p>
+        </div>
+
+        <!-- ===================================================
+             Projects List
+             =================================================== -->
+
+        <div class="projects-list-section">
+          <h3>قائمة المشاريع</h3>
+
+          <div id="projectList" class="projects-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Dashboard JS -->
+    <script src="./dashboard.js"></script>
+  </body>
+</html>
